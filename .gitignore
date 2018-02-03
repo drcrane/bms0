@@ -1,0 +1,16 @@
+*
+!*.*
+!*/
+*.o
+*.swp
+*.hex
+*.elf
+bms0cellsel
+_autosave-*
+*.zip
+*.bak
+*-bak
+*.map
+*.su
+*.d
+
