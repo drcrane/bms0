@@ -150,17 +150,6 @@ F 3 "" H 3600 1050 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Q_NMOS_GDSD Q2
-U 1 1 5A75DF39
-P 5500 1500
-F 0 "Q2" H 5800 1550 50  0000 R CNN
-F 1 "FQT4N20L" H 6050 1450 50  0000 R CNN
-F 2 "TO_SOT_Packages_SMD:SOT-223" H 5700 1600 50  0001 C CNN
-F 3 "" H 5500 1500 50  0000 C CNN
-	1    5500 1500
-	1    0    0    -1  
-$EndComp
-$Comp
 L Q_NMOS_GDSD Q3
 U 1 1 5A75DF9A
 P 6200 1900
@@ -298,10 +287,7 @@ Wire Wire Line
 	5600 1300 5600 1200
 Wire Wire Line
 	5500 1200 6000 1200
-Wire Wire Line
-	5700 1200 5700 1300
 Connection ~ 5600 1200
-Connection ~ 5700 1200
 Wire Wire Line
 	6300 900  6300 1000
 Wire Wire Line
@@ -967,9 +953,9 @@ Text GLabel 1100 3500 0    60   Input ~ 0
 UCA0RXD
 Text GLabel 1100 3600 0    60   Input ~ 0
 UCA0TXD
-Text GLabel 1100 4500 0    60   Input ~ 0
+Text GLabel 1100 3400 0    60   Input ~ 0
 RS485TXEN
-Text GLabel 1100 4600 0    60   Input ~ 0
+Text GLabel 1100 3700 0    60   Input ~ 0
 RS485RXEN
 Text GLabel 3100 6700 2    60   Input ~ 0
 RS485TXEN
@@ -983,10 +969,6 @@ Wire Wire Line
 	1100 3500 1200 3500
 Wire Wire Line
 	1100 3600 1200 3600
-Wire Wire Line
-	1100 4500 1200 4500
-Wire Wire Line
-	1100 4600 1200 4600
 Text GLabel 6400 4500 0    60   Input ~ 0
 IOEXRST
 Connection ~ 6500 4500
@@ -1000,21 +982,15 @@ U 1 1 5A76DB15
 P 3800 2650
 F 0 "P3" H 3800 2900 50  0000 C CNN
 F 1 "CONN_01X04" V 3900 2650 50  0000 C CNN
-F 2 "Connectors_Molex:Molex_KK-6410-04_04x2.54mm_Straight" H 3800 2650 50  0001 C CNN
+F 2 "Custom_Descretes:MINICON_01X04" H 3800 2650 50  0001 C CNN
 F 3 "" H 3800 2650 50  0000 C CNN
 	1    3800 2650
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	3100 2700 3100 3700
+	3100 2600 3100 3700
 Wire Wire Line
 	2600 3600 3000 3600
-Wire Wire Line
-	3000 3600 3000 2600
-Wire Wire Line
-	3000 2600 3600 2600
-Wire Wire Line
-	3100 2700 3600 2700
 Wire Wire Line
 	1000 2500 3600 2500
 Connection ~ 1100 2700
@@ -1062,14 +1038,10 @@ Connection ~ 3400 3700
 Wire Wire Line
 	3400 3200 3400 2800
 Connection ~ 3400 2800
-Text GLabel 3150 4100 2    60   Input ~ 0
+Text GLabel 1100 4000 0    60   Input ~ 0
 SW5VEN
-Text GLabel 3150 4200 2    60   Input ~ 0
+Text GLabel 1100 4100 0    60   Input ~ 0
 SWGNDEN
-Wire Wire Line
-	3150 4100 2600 4100
-Wire Wire Line
-	2600 4200 3150 4200
 Connection ~ 1100 2500
 Text GLabel 5000 900  0    60   Input ~ 0
 5V
@@ -1245,11 +1217,11 @@ Wire Wire Line
 	7900 1800 7800 1800
 Connection ~ 7800 1800
 Wire Wire Line
-	7800 2400 7800 2300
+	7800 2300 7800 2500
 Wire Wire Line
 	5200 2400 8500 2400
 Wire Wire Line
-	7200 2400 7200 2300
+	7200 2300 7200 2500
 Connection ~ 7200 2400
 Connection ~ 7800 2400
 Wire Wire Line
@@ -1264,20 +1236,14 @@ Wire Wire Line
 Wire Wire Line
 	7300 1800 7300 1900
 Connection ~ 7200 1800
-Text GLabel 7500 2500 2    60   Input ~ 0
+Text GLabel 7950 2900 2    60   Input ~ 0
 DISCH_BUSA
-Text GLabel 6900 2700 2    60   Input ~ 0
+Text GLabel 6700 2900 0    60   Input ~ 0
 DISCH_BUSB
 Wire Wire Line
 	7500 2100 7400 2100
 Wire Wire Line
-	7400 2100 7400 2500
-Wire Wire Line
-	7400 2500 7500 2500
-Wire Wire Line
-	6900 2700 6800 2700
-Wire Wire Line
-	6800 2700 6800 2100
+	6800 2100 6800 2900
 Wire Wire Line
 	6800 2100 6900 2100
 Wire Wire Line
@@ -1348,7 +1314,7 @@ U 1 1 5A7EFECB
 P 2400 5400
 F 0 "P7" H 2400 5600 50  0000 C CNN
 F 1 "CONN_01X03" V 2500 5400 50  0000 C CNN
-F 2 "Connectors_Molex:Molex_KK-6410-03_03x2.54mm_Straight" H 2400 5400 50  0001 C CNN
+F 2 "Custom_Descretes:DS18B20" H 2400 5400 50  0001 C CNN
 F 3 "" H 2400 5400 50  0000 C CNN
 	1    2400 5400
 	-1   0    0    -1  
@@ -1462,4 +1428,79 @@ Text Notes 4550 2650 0    60   ~ 0
 ZXMP10A18G is -100V (required -85V)
 Text Notes 4350 6400 0    60   ~ 0
 ULN2803A Inputs will float (because MCP23017 is in reset mode)\nuntil the MSP430G2553 has initialised. The ULN2803A has internal\npull-down resistors so this short-lived condition is ok.
+Wire Wire Line
+	6700 2900 7200 2900
+$Comp
+L R R23
+U 1 1 5AA3F5FA
+P 7200 2650
+F 0 "R23" V 7280 2650 50  0000 C CNN
+F 1 "33k" V 7200 2650 50  0000 C CNN
+F 2 "Resistors_SMD:R_0603" V 7130 2650 50  0001 C CNN
+F 3 "" H 7200 2650 50  0000 C CNN
+	1    7200 2650
+	1    0    0    -1  
+$EndComp
+$Comp
+L R R24
+U 1 1 5AA3F6C7
+P 7800 2650
+F 0 "R24" V 7880 2650 50  0000 C CNN
+F 1 "33k" V 7800 2650 50  0000 C CNN
+F 2 "Resistors_SMD:R_0603" V 7730 2650 50  0001 C CNN
+F 3 "" H 7800 2650 50  0000 C CNN
+	1    7800 2650
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7400 2100 7400 2900
+Wire Wire Line
+	7400 2900 7950 2900
+Wire Wire Line
+	7800 2800 7800 2900
+Connection ~ 7800 2900
+Wire Wire Line
+	7200 2900 7200 2800
+Connection ~ 6800 2900
+Wire Wire Line
+	1100 4000 1200 4000
+Wire Wire Line
+	1100 4100 1200 4100
+Wire Wire Line
+	1100 3700 1200 3700
+Wire Wire Line
+	1100 3400 1200 3400
+Wire Wire Line
+	3100 2600 3600 2600
+Wire Wire Line
+	3600 2700 3000 2700
+Wire Wire Line
+	3000 2700 3000 3600
+$Comp
+L Q_NMOS_GSD Q2
+U 1 1 5AA418B4
+P 5500 1500
+F 0 "Q2" H 5800 1550 50  0000 R CNN
+F 1 "FDV303N" H 6000 1450 50  0000 R CNN
+F 2 "TO_SOT_Packages_SMD:SOT-23" H 5700 1600 50  0001 C CNN
+F 3 "" H 5500 1500 50  0000 C CNN
+	1    5500 1500
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 5AA42C4C
+P 2800 3100
+F 0 "#PWR?" H 2800 2850 50  0001 C CNN
+F 1 "GND" H 2800 2950 50  0000 C CNN
+F 2 "" H 2800 3100 50  0000 C CNN
+F 3 "" H 2800 3100 50  0000 C CNN
+	1    2800 3100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2700 3000 2800 3000
+Wire Wire Line
+	2800 3000 2800 3100
+Connection ~ 2700 3000
 $EndSCHEMATC
