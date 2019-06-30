@@ -28,12 +28,8 @@ LIBS:opto
 LIBS:atmel
 LIBS:contrib
 LIBS:valves
-LIBS:analog_devices_p
 LIBS:msp430
-LIBS:ti
 LIBS:Oscillators
-LIBS:xtal
-LIBS:vreg
 LIBS:cellmon2-cache
 EELAYER 25 0
 EELAYER END
@@ -1258,4 +1254,6 @@ F 3 "" H 10550 3300 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Connection ~ 10550 3100
+Text Label 7000 3000 0    60   ~ 0
+UCB0SCLK
 $EndSCHEMATC
