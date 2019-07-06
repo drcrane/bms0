@@ -3,9 +3,9 @@
 #define SPIPORTDIR  P1DIR
 #define SPIPORTOUT  P1OUT
 #define SCLKBIT     BIT5
-#define MOSIBIT     BIT6
+#define MOSIBIT     BIT7
 #define SPIPORTIN   P1IN
-#define MISOBIT     BIT7
+#define MISOBIT     BIT6
 
 void SPI_init() {
 	SPIPORTDIR &= ~MISOBIT;

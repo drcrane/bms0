@@ -3,9 +3,10 @@
 
 #include <stdint.h>
 
-#define AD_CS    BIT0
-#define AD_CNVST BIT1
-#define AD_PD    BIT2
+#define AD_PORT  P3OUT
+#define AD_CS    BIT6
+#define AD_CNVST BIT5
+#define AD_PD    BIT7
 
 uint32_t ad7280a_write(uint8_t dev, uint8_t reg, uint8_t val, uint8_t write_all);
 
