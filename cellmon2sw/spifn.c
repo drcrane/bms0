@@ -1,5 +1,7 @@
 #include <msp430.h>
 
+#include "utilityfn.h"
+
 #define SPIPORTDIR  P1DIR
 #define SPIPORTOUT  P1OUT
 #define SCLKBIT     BIT5
@@ -56,6 +58,7 @@ int SPI_rw(int v_out) {
 			SPIPORTOUT &= ~MOSIBIT;
 		}
 		v_out <<= 1;
+		//Utility_delay(0x80);
 		__nop();
 		__nop();
 		v_in <<= 1;
@@ -63,6 +66,7 @@ int SPI_rw(int v_out) {
 			v_in |= 0x01;
 		}
 		SPIPORTOUT &= ~SCLKBIT;
+		//Utility_delay(0x80);
 		__nop();
 		__nop();
 	}

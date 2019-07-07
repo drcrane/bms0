@@ -14,6 +14,8 @@
 char * heap_buf;
 char txbuf[64];
 
+uint16_t cell_voltages[6];
+
 void hwuart_sendstr(char * ptr) {
 	P3OUT |= BIT2 | BIT3;
 	while (*ptr != '\0') {
@@ -24,17 +26,38 @@ void hwuart_sendstr(char * ptr) {
 	P3OUT &= ~(BIT2 | BIT3);
 }
 
+void timer_setup() {
+	//TA1CTL = ID_3 | TASSEL_2 | MC_1 | TACLR;
+	
+	// 1 cycle @ 16MHz = 0.0625uS, tick once per mS: 1000.0/(0.0625*8.0) = 2000
+	//TA1CCR0 = (2000 - 1);
+	
+	// 1 cycle @ 8MHz = 0.125uS, tick once per mS: 1000.0/(0.125*8.0) = 1000
+	//TA1CCR0 = (1000 - 1);
+	
+	// 1 cycle @ 1MHz = 1uS, tick once every 250 mS: 250.0/(1.0 * 1.0) = 250
+	//TA1CCR0 = (250 - 1);
+	
+	//TA1CCTL0 = CCIE;
+}
+
 void usci_a0b0_setup() {
 	// UCA0
 	UCA0CTL1 |= UCSSEL_2 | UCSWRST;
+
+	// 9600 at 1MHz
+	UCA0BR0 = 104;
+	UCA0BR1 = 0;
+	UCA0MCTL |= UCBRF_1;
 	// 9600 at 8MHz
 	//UCA0BR0 = 64;
 	//UCA0BR1 = 3;
 	//UCA0MCTL = UCBRS_2;
 	// 9600 at 16MHz
-	UCA0BR0 = 104;
-	UCA0BR1 = 0;
-	UCA0MCTL |= UCBRF_3 | UCOS16;
+	//UCA0BR0 = 104;
+	//UCA0BR1 = 0;
+	//UCA0MCTL |= UCBRF_3 | UCOS16;
+
 	UCA0CTL1 &= ~(UCSWRST);
 	//IE2 |= UCA0RXIE;
 	// UCB0
@@ -64,7 +87,8 @@ void gpio_setup() {
 	// P3.5 - /AD_CNVST
 	// P3.6 - /AD_CS
 	// P3.7 - /AD_PD
-	P3OUT = BIT5 | BIT6 | BIT7;
+	//P3OUT = BIT5 | BIT6 | BIT7;
+	P3OUT = BIT5 | BIT6;
 	P3DIR = 0xff;
 }
 
@@ -101,8 +125,11 @@ int main() __attribute__ ((naked));
 int main() {
 	WDTCTL = WDTPW | WDTHOLD;
 
-	BCSCTL1 = CALBC1_16MHZ;
-	DCOCTL = CALDCO_16MHZ;
+	//BCSCTL1 = CALBC1_16MHZ;
+	//DCOCTL = CALDCO_16MHZ;
+	
+	BCSCTL1 = CALBC1_1MHZ;
+	DCOCTL = CALDCO_1MHZ;
 
 	gpio_setup();
 	usci_a0b0_setup();
@@ -158,28 +185,34 @@ int main() {
 			// Got a packet... decode and respond.
 			if (packet_ctx.buf_start[0] == RS485_OURID &&
 					packet_ctx.buf_start[2] == OPCODE_READVOLTAGES) {
-				//AD_PORT |= AD_PD;
-				//Utility_delay(0x4);
+				uint8_t src;
+				src = packet_ctx.buf_start[1];
+				AD_PORT |= (AD_PD | AD_CNVST);
+				Utility_delay(0x800);
 				AD_PORT &= ~(AD_CS);
-				ad7280a_write(0, 0x1c, 0x0, 1);
-				ad7280a_write(0, 0xd, 0xa0, 1);
-				ad7280a_write(0, 0x1d, 0x2, 1);
+				ad7280a_rw((uint8_t *)heap_buf, 0, 0x1c, 0x0, 1);
+				ad7280a_rw((uint8_t *)heap_buf, 0, 0xd, 0xa0, 1);
+				ad7280a_rw((uint8_t *)heap_buf, 0, 0x1d, 0x2, 1);
 				AD_PORT &= ~AD_CNVST;
 				Utility_delay(0x4);
 				AD_PORT |= AD_CNVST;
-				heap_buf[0] = heap_buf[1];
+				heap_buf[0] = src;
 				heap_buf[1] = RS485_OURID;
 				heap_buf[2] = OPCODE_READVOLTAGES;
 				heap_buf[3] = 0;
 				//Utility_delay(0x80);
-				for (i = 1; i < 7; i++) {
-					*(((uint32_t *)heap_buf) + i) = ad7280a_write(0x1f, 0, 0, 0);
+				uint8_t * ptr = ((uint8_t *)heap_buf) + 4;
+				uint16_t * ptr2 = (uint16_t *)(((uint8_t *)heap_buf) + 4);
+				for (i = 0; i < 6; i++) {
+					ad7280a_rw(ptr, 0x1f, 0, 0, 0);
+					*ptr2 = ad7280a_decodevoltage(ptr);
+					ptr2++;
+					ptr += 4;
 				}
-				//my_memcpy(heap_buf, "ACK\033", 4);
 				AD_PORT |= AD_CS;
-				//AD_PORT &= ~(AD_PD);
+				AD_PORT &= ~(AD_PD | AD_CNVST);
 				P3OUT |= BIT2 | BIT3;
-				packet_send(7 * 4);
+				packet_send(4 + (6 * 2));
 			}
 			//IFG2 &= ~(UCA0RXIFG);
 		} else
