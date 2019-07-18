@@ -130,7 +130,7 @@ int main() {
 	
 	BCSCTL1 = CALBC1_1MHZ;
 	DCOCTL = CALDCO_1MHZ;
-
+	
 	gpio_setup();
 	usci_a0b0_setup();
 
@@ -188,13 +188,14 @@ int main() {
 				uint8_t src;
 				src = packet_ctx.buf_start[1];
 				AD_PORT |= (AD_PD | AD_CNVST);
-				Utility_delay(0x800);
+				//Utility_delay(0x800);
+				Utility_delay(0x200);
 				AD_PORT &= ~(AD_CS);
 				ad7280a_rw((uint8_t *)heap_buf, 0, 0x1c, 0x0, 1);
 				ad7280a_rw((uint8_t *)heap_buf, 0, 0xd, 0xa0, 1);
 				ad7280a_rw((uint8_t *)heap_buf, 0, 0x1d, 0x2, 1);
 				AD_PORT &= ~AD_CNVST;
-				Utility_delay(0x4);
+				Utility_delay(0x1);
 				AD_PORT |= AD_CNVST;
 				heap_buf[0] = src;
 				heap_buf[1] = RS485_OURID;

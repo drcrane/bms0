@@ -14,7 +14,7 @@ MCU        = msp430g2553
 # List all the source files here
 # eg if you have a source file foo.c then list it here
 ASMSRC = startup.S utilityfn_s.S epilogue.S srli.S slli.S
-SOURCES = main.c utilityfn.c crcfn.c usci.c timerfn.c
+SOURCES = main.c utilityfn.c crcfn.c usci.c timerfn.c relaysm.c
 # Include are located in the Include directory
 INCLUDES = -Iinclude
 # location of linker scripts for MSP430 target (check that $(MCU).ld exists here)

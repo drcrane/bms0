@@ -6,6 +6,7 @@
 #include "utilityfn.h"
 #include "usci.h"
 #include "timerfn.h"
+#include "relaysm.h"
 
 #define RS485_OURID		0x10
 #define OPCODE_READVOLTAGES	1
@@ -13,6 +14,7 @@
 #define OPCODE_SETRELAYS	3
 #define OPCODE_GETRELAYS	4
 #define OPCODE_GETBUSVOLTAGES	5
+#define OPCODE_GETSTATE         7
 
 char * heap_buf;
 char txbuf[64];
@@ -132,6 +134,8 @@ int main() {
 	packet_receive();
 
 	mcp23017_ctx.oper = 0;
+	relay_ctx.state = 0;
+	relay_ctx.current_cb = NULL;
 
 	__asm("\tnop\n");
 	__eint();
@@ -140,14 +144,35 @@ int main() {
 	while (1) {
 		if (packet_ctx.state == PACKET_STATE_RECEIVE_SUCCESS) {
 			// Got a packet... decode and respond.
-			if (packet_ctx.buf_start[0] == RS485_OURID &&
-					packet_ctx.buf_start[2] == OPCODE_READVOLTAGES) {
-				rs485_transmit();
-				heap_buf[0] = heap_buf[1];
-				heap_buf[1] = RS485_OURID;
-				heap_buf[2] = 0;
-				heap_buf[3] = 0;
-				packet_send(7 * 4);
+			if (packet_ctx.buf_start[0] == RS485_OURID) {
+				if (packet_ctx.buf_start[2] == OPCODE_READVOLTAGES) {
+					rs485_transmit();
+					heap_buf[0] = heap_buf[1];
+					heap_buf[1] = RS485_OURID;
+					heap_buf[2] = 0;
+					heap_buf[3] = 0;
+					packet_send(4);
+				} else
+				if (packet_ctx.buf_start[2] == OPCODE_SETRELAYS) {
+					relay_ctx.state = 0;
+					relay_initialise();
+					relay_fusedcheck_process();
+					packet_receive();
+				} else
+				if (packet_ctx.buf_start[2] == OPCODE_GETRELAYS) {
+				} else
+				if (packet_ctx.buf_start[2] == OPCODE_GETSTATE) {
+					rs485_transmit();
+					heap_buf[0] = heap_buf[1];
+					heap_buf[1] = RS485_OURID;
+					heap_buf[2] = 0;
+					heap_buf[3] = 0;
+					heap_buf[4] = relay_ctx.state;
+					heap_buf[5] = 0;
+					heap_buf[6] = 0;
+					heap_buf[7] = 0;
+					packet_send(8);
+				}
 			}
 		} else
 		if (packet_ctx.state == PACKET_STATE_SEND_SUCCESS) {
@@ -155,6 +180,16 @@ int main() {
 				rs485_receive();
 				packet_receive();
 			}
+		} else
+		if (mcp23017_ctx.oper == MCP23017_OPER_COMPLETE) {
+			if (mcp23017_ctx.callback != NULL) {
+				mcp23017_ctx.callback(mcp23017_ctx.oper);
+			} else {
+				mcp23017_ctx.oper = MCP23017_OPER_IDLE;
+			}
+		} else
+		if (relay_ctx.current_cb != NULL) {
+			relay_ctx.current_cb();
 		} else {
 			timer_docallbacks();
 		}

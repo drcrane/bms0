@@ -9,12 +9,13 @@ struct relay_context {
 	uint16_t board_state;
 	uint8_t port[2];
 	uint8_t prech_port[2];
+	uint16_t voltages[4];
 };
 
-struct relay_context relay_ctx;
+extern struct relay_context relay_ctx;
 
 void relay_initialise();
-void relay_process();
+void relay_fusedcheck_process();
 
 #endif // RELAYSM_H
 

@@ -1,6 +1,7 @@
 #include <msp430.h>
 
 #include "usci.h"
+#include "relaysm.h"
 
 struct packet_context packet_ctx;
 extern char * heap_buf;
@@ -26,6 +27,18 @@ int packet_receive() {
 }
 
 struct mcp23017_context mcp23017_ctx;
+
+void mcp23017_cleariodir() {
+	mcp23017_write(0x00, 0xff, 0xff, mcp23017_writelatch);
+}
+
+void mcp23017_writelatch() {
+	mcp23017_write(0x14, relay_ctx.port[0], relay_ctx.port[1], mcp23017_writeiodir);
+}
+
+void mcp23017_writeiodir() {
+	mcp23017_write(0x00, ~relay_ctx.port[0], ~relay_ctx.port[1], NULL);
+}
 
 void mcp23017_write(uint8_t address, uint8_t byte1, uint8_t byte2, void (* callback)()) {
 	UCB0I2CSA = MCP23017_ADDRESS;
@@ -92,7 +105,8 @@ void i2c_read(uint8_t * addr, uint16_t count) {
 
 void USCI0TX_ISR(void) __attribute__ ( ( interrupt( USCIAB0TX_VECTOR ) ) );
 void USCI0TX_ISR() {
-	if (IFG2 & UCA0TXIFG) {
+	uint16_t int_status = IFG2 & IE2;
+	if (int_status & UCA0TXIFG) {
 		// transmitting packet?
 		int c;
 		c = *packet_ctx.buf_ptr & 0xff;
@@ -136,8 +150,8 @@ void USCI0TX_ISR() {
 		}
 	skip_end_checking:
 		UCA0TXBUF = c;
-	} else
-	if (IFG2 & UCB0TXIFG) {
+	}
+	if (int_status & UCB0TXIFG) {
 		if (UCB0I2CSA == MCP23017_ADDRESS) {
 			if (mcp23017_ctx.oper & MCP23017_OPER_WRITE) {
 				if (mcp23017_ctx.bufpos == sizeof(mcp23017_ctx.buf)) {
@@ -173,8 +187,8 @@ void USCI0TX_ISR() {
 			}
 		}
 		//}
-	} else
-	if (IFG2 & UCB0RXIFG) {
+	}
+	if (int_status & UCB0RXIFG) {
 		if (UCB0I2CSA == MCP23017_ADDRESS) {
 			if (mcp23017_ctx.oper & MCP23017_OPER_VERFY_B) {
 				mcp23017_ctx.tmp[0] = UCB0RXBUF;
@@ -209,7 +223,8 @@ extern volatile int uart_data;
 
 void USCI0RX_ISR(void) __attribute__ ( ( interrupt( USCIAB0RX_VECTOR ) ) );
 void USCI0RX_ISR() {
-	if (IFG2 & UCA0RXIFG) {
+	uint16_t int_status = IFG2 & IE2;
+	if (int_status & UCA0RXIFG) {
 		int c;
 		int b;
 		c = UCA0RXBUF;
@@ -246,7 +261,7 @@ void USCI0RX_ISR() {
 		if (packet_ctx.buf_ptr > packet_ctx.buf_end) {
 			packet_ctx.buf_ptr = packet_ctx.buf_start;
 		}
-	} else
+	}
 	if (UCB0STAT & UCNACKIFG) {
 		if (UCB0I2CSA == MCP23017_ADDRESS) {
 			mcp23017_ctx.oper = MCP23017_OPER_ERROR;
@@ -258,6 +273,6 @@ void USCI0RX_ISR() {
 		UCB0CTL1 |= UCTXSTP;
 		UCB0STAT &= ~UCNACKIFG;
 		__bic_SR_register_on_exit(CPUOFF);
-	} 
+	}
 }
 

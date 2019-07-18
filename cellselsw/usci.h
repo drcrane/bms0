@@ -54,7 +54,13 @@ extern struct mcp23017_context mcp23017_ctx;
 #define MCP23017_OPER_COMPLETE    0x200
 #define MCP23017_OPER_ERROR       0x400
 
+void mcp23017_cleariodir();
+void mcp23017_writelatch();
+void mcp23017_writeiodir();
+
 void mcp23017_write(uint8_t address, uint8_t byte1, uint8_t byte2, void (* callback)());
+
+#define MCP3422_ADDRESS 0x68
 
 struct i2c_context {
 	uint8_t * buf;

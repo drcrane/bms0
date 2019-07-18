@@ -14,12 +14,13 @@ MCU        = msp430g2553
 # List all the source files here
 # eg if you have a source file foo.c then list it here
 ASMSRC = startup.S utilityfn_s.S epilogue.S srli.S slli.S
-SOURCES = main.c utilityfn.c crcfn.c spifn.c ad7280a.c
+SOURCES = main.c utilityfn.c crcfn.c spifn.c ad7280a.c usci.c
 # Include are located in the Include directory
 INCLUDES = -Iinclude
 # location of linker scripts for MSP430 target (check that $(MCU).ld exists here)
 #LDFILES  = /opt/msp430-elf/lib/gcc/msp430-elf/5.3.0/430
-LDFILES  = /opt/msp430-elf-X/msp430-elf/lib/430
+#LDFILES  = /opt/msp430-elf-X/msp430-elf/lib/430
+LDFILES = /mnt/sda3/opt/msp430-elf-7.0.1/msp430-elf/lib/430
 # Add or subtract whatever MSPGCC flags you want. There are plenty more
 ########################################################################################
 CFLAGS   = -std=c99 -pedantic -DINCLUDE_ad7280a_write -D__LINUX_MSP430_GCC__ -mmcu=$(MCU) -g -Os -Wall -Wunused $(INCLUDES) -fstack-usage
